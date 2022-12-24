@@ -1,10 +1,10 @@
 import axios from "axios";
 import { useState } from "react"
-// import {Redirect} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 
 export const Login = () => {
-
+    const navigate = useNavigate();
     const [username, SetUsername] = useState("");
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
@@ -26,7 +26,7 @@ export const Login = () => {
     const LoginUser = function (e) {
         e.preventDefault();
         let payload = {
-            username,
+            uid:username,
             password,
         }
 
@@ -35,23 +35,11 @@ export const Login = () => {
             'content-type': 'application/json'
         }
         })
-        .then((response) => response.data).then(function (data) {
-        // handle success
-            console.log(data)
-            document.getElementById("first").innerHTML = data.username;
-            document.getElementById("last").innerHTML = data.password;
-            
-        })
+        .then(() => navigate('/dashboard', { replace: true }))
         .catch(function (error) {
             // handle error
             setErrorMessage(error.response.data);
         })
-
-        //     let message = resp.data;
-        //     if (message === "okay"){
-        //         <Redirect to="/dashboard"/>
-        //     }
-        // }
     }
 
     return (
