@@ -1,9 +1,12 @@
 import React from "react";
+import { SideNav } from "../Components/SideNav";
 
-const Dashboard = () => {
+export const Dashboard = () => {
     return (
-        <h1>This is the Dashboard</h1>
+        <div>
+            <SideNav />
+            <main></main>
+        </div>
     )
 }
 
-export {Dashboard}
