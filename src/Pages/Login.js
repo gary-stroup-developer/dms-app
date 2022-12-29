@@ -34,8 +34,9 @@ export const Login = () => {
         headers: {
             'content-type': 'application/json'
         }
-        }).then((response) => console.log(response.data))
-        .then(() => navigate('/dashboard', { replace: true }))
+        }).then((response) => {
+            navigate(`/dashboard/${response.data.Role}`, { replace: true })
+        })
         .catch(function (error) {
             // handle error
             setErrorMessage(error.response.data);

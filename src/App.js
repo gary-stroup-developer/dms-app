@@ -19,7 +19,7 @@ function App() {
     <Router>
       <Routes>
         <Route exact path='/' element={< Login />}></Route>
-        <Route exact path='/dashboard' element={< Dashboard />}></Route>
+        <Route exact path='/dashboard/:role' element={< Dashboard />}></Route>
         <Route exact path='/user/profile/:id' element={< UserProfile />}></Route>
         <Route exact path='/dashboard/visitor' element={< VisitorDashboard />}></Route>
         <Route exact path='/user/job/create' element={< CreateJobForm />}></Route>
