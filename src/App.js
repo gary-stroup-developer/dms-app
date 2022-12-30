@@ -7,6 +7,7 @@ import {
 import { AddProduct } from './Pages/AddProduct';
 import { AddUser } from './Pages/AddUser';
 import { CBR } from './Pages/CBR';
+import { CCR } from './Pages/CCR';
 import { CreateJobForm } from './Pages/CreateJobForm';
 import { CryoTank } from './Pages/CryoTank';
 
@@ -28,8 +29,9 @@ function App() {
         <Route exact path='/user/job/create' element={< CreateJobForm />}></Route>
         <Route exact path='/user/job/read/:id' element={< ReadJobForm />}></Route>
         <Route exact path='/user/fsr/:id' element={<FSR />}></Route>
-        <Route exact path='/user/fsr/:id' element={<CBR />}></Route>
-        <Route exact path='/user/fsr/:id' element={<CryoTank />}></Route>
+        <Route exact path='/user/cbr/:id' element={<CBR />}></Route>
+        <Route exact path='/user/cbr/:id' element={<CCR />}></Route>
+        <Route exact path='/user/inventory/:id' element={<CryoTank />}></Route>
         <Route exact path='/admin/new-product' element={< AddProduct />}></Route>
         <Route exact path='/admin/new-user' element={< AddUser />}></Route>
       </Routes>

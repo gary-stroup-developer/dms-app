@@ -50,7 +50,7 @@ export const Dashboard = () => {
                     <h1 className="mb-4">Cell Culture Capacity: { (capacity*100).toFixed(2) }%</h1>
                     <ProgressBar variant={(capacity * 100) > 80? "success": (capacity * 100) > 60 ? "warning":"danger" } now={capacity * 100} label={`${(capacity * 100).toFixed(2)}%`} />
                 </div>
-                <div className="mt-4 col-span-2 grid w-full grid-cols-2 gap-3 md:grid-cols-3">
+                <div className="mt-4 grid w-full grid-cols-1 gap-3 md:grid-cols-3">
                     {userProfile.map(card => card)}
                 </div>
             </main>
