@@ -1,5 +1,4 @@
 import { useState } from "react";
-// import Modal from 'react-bootstrap/Modal'
 export const ReadJobForm = ({ jobid }) => {
     //need to set correct state values
     //axios request to get job by jobid
@@ -76,8 +75,3 @@ export const ReadJobForm = ({ jobid }) => {
     )
 }
 
-	// Weight     float64   `bson:"weight,omitempty" json:"weight,omitempty"`
-	// Status     string    `bson:"status,omitempty" json:"status,omitempty"`
-	// UID        string    `bson:"uid,omitempty" json:"uid,omitempty"`
-	// FSR        string    `bson:"fsr,omitempty" json:"fsr,omitempty"`
-	// CBR        CBR       `bson:"cbr,omitempty" json:"cbr,omitempty"`
