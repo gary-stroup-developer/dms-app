@@ -5,7 +5,8 @@ import { JobCard } from "../Components/JobCard";
 import Modal from 'react-bootstrap/Modal';
 import { Button } from 'react-bootstrap';
 import { ReadJobForm } from '../Pages/ReadJobForm';
-import {useParams} from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { Draggable, Droppable } from 'react-drag-and-drop';
 
 export const UserProfile = () => {
     const [show, setShow] = useState(false);
@@ -91,16 +92,18 @@ export const UserProfile = () => {
             </div>
             <div className="flex flex-wrap mt-5 justify-around">
                 <div className="flex-col basis-10/12 mt-2 md:basis-1/4">
-                    <div className="flex justify-between text-white bg-purple-600 p-3 rounded" onClick={()=>toggleContent("queue")}>
-                        <h1>Queue</h1>
-                        <p>{queue.length}</p>
-                    </div>
-                    
-                    <div id="queue">
-                        {
-                            queue.map(job =><JobCard key={job._id} desc={job.raw_desc} pn={job.cat_num} ln={job.cat_lot} jobid={job._id} due={"2022-12-31"}/>)
-                        }
-                    </div>
+           
+                        <div className="flex justify-between text-white bg-purple-600 p-3 rounded" onClick={()=>toggleContent("queue")}>
+                            <h1>Queue</h1>
+                            <p>{queue.length}</p>
+                        </div>
+                    <Droppable>
+                        <div id="queue">
+                            {
+                                queue.map(job => <Draggable data={job._id}><JobCard key={job._id} desc={job.raw_desc} pn={job.cat_num} ln={job.cat_lot} jobid={job._id} due={"2022-12-31"} /></Draggable>)
+                            }
+                        </div>
+                    </Droppable>
                 </div>
 
                 <div className="flex-col basis-10/12 mt-2 md:basis-1/4">
