@@ -15,14 +15,23 @@ const Container = styled.div`
 `
 
 export const UserProfile = () => {
-    // const [show, setShow] = useState(false);
-    // const handleClose = () => setShow(false);
-    // const handleShow = () => setShow(true);
 
-    const [queue, setQueue] = useState([]);
-    const [wip, SetWip] = useState([]);
-    const [staged, SetStaged] = useState([]);
     const [complete, SetComplete] = useState(0);
+    const [queue, SetQueue] = useState({
+        id: "queue",
+        title: "Queue",
+        jobs: []
+    });
+    const [wip, SetWip] = useState({
+        id: "wip",
+        title: "WIP",
+        jobs: []
+    });
+    const [staged, SetStaged] = useState({
+        id: "staged",
+        title: "Staged",
+        jobs: []
+    });
     const [data, SetData] = useState({
         columns: {
             "queue": {
@@ -55,40 +64,48 @@ export const UserProfile = () => {
     
     useEffect(() => {
         setID(userID.id)
-        axios.post("http://localhost:8080/dms/userprofile/jobs", {uid:id}, {
-            headers: {
-                'content-type': 'application/json'
-            }
-        }).then((response) => {
-            let user = response.data.Users[0];
-            let jobs = response.data.Jobs;
-            console.log(response.data.Jobs)
-            if (user) {
-                SetFirst(user.firstname);
-                SetLast(user.lastname);
-                setCapacity(((user.capacity/6.5)*100).toFixed(2))
-            }
-            for (let job of jobs) {
-                if (job) {
+        const getData = async () => {
+            try {
+                const response = await axios.post("http://localhost:8080/dms/userprofile/jobs", { uid: id }, {
+                    headers: {
+                        'content-type': 'application/json'
+                    }
+                });
+                
+                let user = await response.data.Users[0];
+                let jobs = response.data.Jobs;
+            
+                if (user) {
+                    SetFirst(user.firstname);
+                    SetLast(user.lastname);
+                    setCapacity(((user.capacity / 6.5) * 100).toFixed(2))
+                }
+                
+                for (let job of jobs) {
+                   
                     switch (job._id) {
                         case "queue":
-                            setQueue(job.jobs.map((record) => record));
-                            const newQueueState = {
-                            columns: {
-                                ...data.columns,
-                                [job._id]: {
-                                    ...data.columns[job._id],
-                                    jobs:job.jobs.map((record) => record)
-                                    }
-                                }
+                            const newQueueColumn = {
+                                ...queue,
+                                jobs: job.jobs.map((record) => record)
                             }
-                            SetData(newQueueState);
+                            SetQueue(newQueueColumn)
                             break;
                         case "wip":
-                            SetWip(job.jobs.map((record) => record));
+
+                            const newWIPColumn = {
+                                ...wip,
+                                jobs: job.jobs.map((record) => record)
+                            }
+                            SetWip(newWIPColumn);
                             break;
                         case "staged":
-                            SetStaged(job.jobs.map((record) => record));
+
+                            const newStagedColumn = {
+                                ...staged,
+                                jobs: job.jobs.map((record) => record)
+                            }
+                            SetStaged(newStagedColumn);
                             break;
                         case "complete":
                             SetComplete(job.jobs.length);
@@ -97,43 +114,34 @@ export const UserProfile = () => {
                             setErrorMessage("Jobs unavailable at this time");
                     }
                 }
-            }
-
-           
-
-            const newWipState = {
-                columns: {
-                    ...data.columns,
-                    [data.columns["wip"].id]: {
-                        ...data.columns.wip,
-                        jobs:wip.map((record) => record)
-                    }
-                }
-            }
-            SetData(newWipState);
-           
-            const newStageState = {
-                columns: {
-                    ...data.columns,
-                    [data.columns["staged"].id]: {
-                        ...data.columns.staged,
-                        jobs: staged.map((record) => record)
-                    }
-                }
-            }
-            SetData(newStageState);
-
-            console.log(data);
-            })
-            .catch((error) => {
+            } catch (error) {
                 // handle error
-                while (!error) {
-                    console.log("uh oh")
+                if (error) {
+                    console.log(error)
                 }
-                console.log(error)
-            });
-    }, [id, userID,SetData]);
+                
+            }
+        };
+
+        getData();
+    }, [id, userID]);
     
+    useEffect(() => {
+        let col1 = "queue";
+        let col2 = "wip";
+        let col3 = "staged";
+        const newState = {
+            columns: {
+                ...data.columns,
+                [col1]: queue,
+                [col2]: wip,
+                [col3]: staged,
+            }
+        }
+        SetData(newState);
+        console.log({queue,wip,staged})
+    },[queue,wip,staged]);
+
     const updateList = (result) => {
         const { destination, source, draggableId } = result;
 
@@ -153,7 +161,8 @@ export const UserProfile = () => {
 
     return (
         <div>
-            {errorMessage}
+            <p className="text-black-500">{data.columns["wip"].jobs.length}</p>
+            <p>{errorMessage}</p>
             <div className="text-slate-700 border-b border-black grid grid-cols-3 grid-rows-3 p-4">
                 <h1 className="text-3xl row-start-1 col-start-2 col-span-2 mb-4 md:text-5xl">{first} { last}</h1>
                 <Link className="row-start-2 self-center justify-self-center p-4 md:text-2xl hover:text-purple-600" to="/dashboard/admin">Dashboard</Link>
@@ -166,9 +175,9 @@ export const UserProfile = () => {
             </div>
             <DragDropContext onDragEnd={updateList}>
                 <Container>
-                    <Column key={"queue"} status={queue} toggle={"queue"} title={ "Queue" } />
-                    <Column key={"wip"} status={wip} toggle={"wip"} title={"WIP"}/>
-                    <Column key={"staged"} status={staged} toggle={ "staged" } title={"Staged"}/>
+                    <Column key={queue.id} status={data.columns["queue"].jobs} toggle={queue.id} title={ queue.title } />
+                    <Column key={wip.id} status={data.columns["wip"].jobs} toggle={wip.id} title={wip.title}/>
+                    <Column key={staged.id} status={data.columns["staged"].jobs} toggle={ staged.id } title={staged.title}/>
                 </Container>
             </DragDropContext>
         </div>
@@ -176,50 +185,4 @@ export const UserProfile = () => {
 }
 
 
-            // <DragDropContext>
-            // <div className="flex flex-wrap mt-5 justify-around">
-            //     <div className="flex-col basis-10/12 mt-2 md:basis-1/4">
-           
-            //             <div className="flex justify-between text-white bg-purple-600 p-3 rounded" onClick={()=>toggleContent("queue")}>
-            //                 <h1>Queue</h1>
-            //                 <p>{queue.length}</p>
-            //             </div>
-            //         <Droppable droppableId="queue">
-            //             {provided => (
-            //                 <div innerRef={provided.innerRef} {...provided.droppableProps} id="queue">
-            //                     {
-            //                         queue.map((job,index) => <JobCard key={job._id} desc={job.raw_desc} pn={job.cat_num} ln={job.cat_lot} jobid={job._id} due={"2022-12-31"} index={index} />)
-            //                     }
-            //                     {provided.placeholder}
-            //                 </div>
-            //             )}
-            //         </Droppable>
-            //     </div>
-
-            //     <div className="flex-col basis-10/12 mt-2 md:basis-1/4">
-            //         <div className="flex justify-between text-white bg-purple-600 p-3 rounded" onClick={()=>toggleContent("wip")}>
-            //             <h1>WIP</h1>
-            //             <p>{wip.length}</p>
-            //         </div>
-
-            //         <div id="wip">
-            //             {
-            //                 wip.map(job =><JobCard key={job._id} desc={job.raw_desc} pn={job.cat_num} ln={job.cat_lot} jobid={job._id} due={"2022-12-31"}/>)
-            //             }
-            //         </div>
-            //     </div>
-
-            //     <div className="flex-col basis-10/12 mt-2 md:basis-1/4">
-            //         <div className="flex justify-between text-white bg-purple-600 p-3 rounded" onClick={() => toggleContent("staged")}>
-            //             <h1>Staged</h1>
-            //             <p>{staged.length}</p>
-            //         </div>
-                    
-            //         <div id="staged">
-            //             {
-            //                 staged.map(job =><JobCard key={job._id} desc={job.raw_desc} pn={job.cat_num} ln={job.cat_lot} jobid={job._id} due={"2022-12-31"}/>)
-            //             }
-            //         </div>
-            //     </div>
-            // </div>
-            // </DragDropContext>
+                            
