@@ -1,7 +1,8 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
-import { Button,Toast } from 'react-bootstrap';
+import { Button, Toast } from 'react-bootstrap';
+import ToastContainer from 'react-bootstrap/ToastContainer';
 import { useParams } from "react-router-dom";
 import { DragDropContext} from '@hello-pangea/dnd';
 import styled from "styled-components";
@@ -57,14 +58,26 @@ export const UserProfile = () => {
             }
         }
     });
-
-    const [first, SetFirst] = useState("");
-    const [last, SetLast] = useState("");
+    const [user, SetUser] = useState({
+        _id: "",
+        capacity: 0,
+        email: "",
+        firstname: "",
+        lastname: "",
+        role: "",
+        status: "",
+        uid: ""
+    });
+    
+    const [showB, SetShowB] = useState(false);
+    const [PN, SetPN] = useState("");
+    const [LN, SetLN] = useState("");
+    const [response, SetResponse] = useState("");
     const [capacity, setCapacity] = useState(0);
 
     const [id, setID] = useState("");
 
-    const [errorMessage, setErrorMessage] = useState("");
+    const [errorMessage, setErrorMessage] = useState(false);
 
     let userID = useParams();
     
@@ -78,15 +91,16 @@ export const UserProfile = () => {
                     }
                 });
                 
-                let user = await response.data.Users[0];
+                let respUser = response.data.Users[0];
+
+                SetUser((prevState) => ({
+                    ...prevState,
+                    ...respUser
+                }));
+
+                setCapacity(((respUser.capacity / 6.5) * 100).toFixed(2));
+
                 let jobs = response.data.Jobs;
-                
-                
-                if (user) {
-                    SetFirst(user.firstname);
-                    SetLast(user.lastname);
-                    setCapacity(((user.capacity / 6.5) * 100).toFixed(2));
-                }
 
                 for (let job of jobs) {
                    
@@ -148,6 +162,8 @@ export const UserProfile = () => {
             }
         }
         SetData(newState);
+
+        
 
     },[queue,wip,staged]);
 
@@ -233,18 +249,34 @@ export const UserProfile = () => {
 
         } else if ((source.droppableId === "column-1" && destination.droppableId === "column-2") || (source.droppableId === "column-3" && destination.droppableId === "column-2")) {
             //add capacity to user and change status
+            SetUser((prevState) => ({
+                ...prevState,
+                capacity: (user.capacity + startResult[0].weight)
+            }));
             newJobStatus = "wip";
+
+            setCapacity((((user.capacity + startResult[0].weight) / 6.5) * 100).toFixed(2));
             updateStatus(newJobStatus,startResult[0],true)
-        } else {
+        } else if ((source.droppableId === "column-2" && destination.droppableId === "column-1") || (source.droppableId === "column-2" && destination.droppableId === "column-3")) {
             //subtract capcity from user and change status
+
             if (destination.droppableId === "column-3") {
-                newJobStatus = "staged";
+               newJobStatus = "staged";
             }
-            updateStatus(newJobStatus,startResult[0],true)
-        }
+      
+            setCapacity((((user.capacity - startResult[0].weight) / 6.5) * 100).toFixed(2));
+            SetUser((prevState) => ({
+                ...prevState,
+                capacity: (user.capacity - startResult[0].weight)
+            }));
+            
+            updateStatus(newJobStatus, startResult[0], true);
+
+        } else { console.log(source.droppableId) }
     }
 
-    const updateStatus = async (status,job,capacity) => {
+    const updateStatus = async (status, job, capacity) => {
+        
         try {
             job.status = status;
             const response = await axios.post("http://localhost:8080/dms/update/job-status", { job, capacity }, {
@@ -253,28 +285,36 @@ export const UserProfile = () => {
                 }
             });
             //add a toast
-            console.log(response.data.Message)
-            return (
-                <Toast>
-                <Toast.Header>
-                    <strong className="me-auto">{job.cat_num} - {job.cat_lot }</strong>
-                    <small>Now</small>
-                </Toast.Header>
-                <Toast.Body>The Job status has been updated!</Toast.Body>
-                </Toast>
-            );
+            //console.log(response)
+            SetResponse(response.data);
+            SetPN(job.cat_num);
+            SetLN(job.cat_lot);
+            SetShowB(true);
+
+            setTimeout(() => {
+                SetShowB(false);
+            }, 3000);
             
         } catch (error) {
-            // handle error
-            console.log(error)
+            // handle error error.response.data
+            setErrorMessage(true);
+
+            SetResponse(error.response.data);
+            SetPN(job.cat_num);
+            SetLN(job.cat_lot);
+            SetShowB(true);
+
+            setTimeout(() => {
+                SetShowB(false);
+                setErrorMessage(false);
+            }, 3000);
         }
     }
 
     return (
         <div>
-            <p>{errorMessage}</p>
             <div className="text-slate-700 border-b border-black grid grid-cols-3 grid-rows-3 p-4">
-                <h1 className="text-3xl row-start-1 col-start-2 col-span-2 mb-4 md:text-5xl">{first} { last}</h1>
+                <h1 className="text-3xl row-start-1 col-start-2 col-span-2 mb-4 md:text-5xl">{user.firstname} {user.lastname}</h1>
                 <Link className="row-start-2 self-center justify-self-center p-4 md:text-2xl hover:text-purple-600" to="/dashboard/admin">Dashboard</Link>
                 {/* <Link className="row-start-3 md:text-2xl" to="/dashboard/user">Create Job</Link> */}
                 <Button variant="link" className="row-start-3 text-slate-700 md:text-2xl border-none no-underline hover:text-purple-600">
@@ -290,6 +330,15 @@ export const UserProfile = () => {
                     <Column key={staged.id} id={staged.dropID} jobs={data.columns["column-3"].jobs} toggle={ staged.id } title={staged.title}/>
                 </Container>
             </DragDropContext>
+            <ToastContainer className="ml-3 p-3" position={"top-start"}>
+                <Toast className="mt-3" show={showB}>
+                    <Toast.Header>
+                        <strong className="me-auto">{PN} - {LN}</strong>
+                        <small>Now</small>
+                    </Toast.Header>
+                    <Toast.Body>{errorMessage ? <p className="text-red-500">{response}</p> : <p className="text-slate-700">{response}</p>}</Toast.Body>
+                </Toast>
+            </ToastContainer>
         </div>
     )
 }
