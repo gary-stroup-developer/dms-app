@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
-import { Button } from 'react-bootstrap';
+import { Button,Toast } from 'react-bootstrap';
 import { useParams } from "react-router-dom";
 import { DragDropContext} from '@hello-pangea/dnd';
 import styled from "styled-components";
@@ -152,7 +152,7 @@ export const UserProfile = () => {
     },[queue,wip,staged]);
 
     const onDragEnd = (result) => {
-        const { destination, source} = result;
+        const { destination, source } = result;
 
         //if user drags item outside list area or doesnt move it
         if (!destination) {
@@ -176,7 +176,7 @@ export const UserProfile = () => {
             let newJobs = start.jobs.map(m => m);
             let result = newJobs.splice(source.index, 1);
             
-            newJobs.splice(destination.index,0,result[0])
+            newJobs.splice(destination.index, 0, result[0])
 
             const newColumn = {
                 ...start,
@@ -221,6 +221,53 @@ export const UserProfile = () => {
         };
 
         SetData(newState);
+
+        let newJobStatus = "queue";
+        if ((source.droppableId === "column-1" && destination.droppableId === "column-3") || (source.droppableId === "column-3" && destination.droppableId === "column-1")) {
+            //update status only
+            if (destination.droppableId === "column-3") {
+                newJobStatus = "staged";
+            }
+
+            updateStatus(newJobStatus,startResult[0],false)
+
+        } else if ((source.droppableId === "column-1" && destination.droppableId === "column-2") || (source.droppableId === "column-3" && destination.droppableId === "column-2")) {
+            //add capacity to user and change status
+            newJobStatus = "wip";
+            updateStatus(newJobStatus,startResult[0],true)
+        } else {
+            //subtract capcity from user and change status
+            if (destination.droppableId === "column-3") {
+                newJobStatus = "staged";
+            }
+            updateStatus(newJobStatus,startResult[0],true)
+        }
+    }
+
+    const updateStatus = async (status,job,capacity) => {
+        try {
+            job.status = status;
+            const response = await axios.post("http://localhost:8080/dms/update/job-status", { job, capacity }, {
+                headers: {
+                    'content-type': 'application/json'
+                }
+            });
+            //add a toast
+            console.log(response.data.Message)
+            return (
+                <Toast>
+                <Toast.Header>
+                    <strong className="me-auto">{job.cat_num} - {job.cat_lot }</strong>
+                    <small>Now</small>
+                </Toast.Header>
+                <Toast.Body>The Job status has been updated!</Toast.Body>
+                </Toast>
+            );
+            
+        } catch (error) {
+            // handle error
+            console.log(error)
+        }
     }
 
     return (

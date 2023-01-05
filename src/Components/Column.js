@@ -17,7 +17,8 @@ const Header = styled.div`
     padding: 0.75rem;
 `
 
-export const Column = ({ id,jobs,toggle,title }) => {
+export const Column = ({ id, jobs, toggle, title }) => {
+    
     function toggleContent(section) {
         let content = document.getElementById(section);
         
@@ -34,7 +35,7 @@ export const Column = ({ id,jobs,toggle,title }) => {
             </Header>
             <Droppable droppableId={id}>
                 {provided => (
-                    <JobList ref={provided.innerRef} {...provided.droppableProps}>
+                    <JobList ref={provided.innerRef} {...provided.droppableProps} id={toggle}>
                         {
                             jobs.map((job,index) => <JobCard key={job._id} desc={job.raw_desc} pn={job.cat_num} ln={job.cat_lot} jobid={job._id} due={"2022-12-31"} index={index} />)
                         }
