@@ -2,11 +2,14 @@ import React,{useState} from 'react';
 import { ReadJobForm } from '../Pages/ReadJobForm'
 import Modal from 'react-bootstrap/Modal';
 import { Button } from 'react-bootstrap';
-import { Draggable } from 'react-beautiful-dnd';
+import { Draggable } from '@hello-pangea/dnd';
 import styled from "styled-components";
 
 const Container = styled.div`
   border: none;
+  
+`
+const Card = styled.div`
   background-color: ${(props) => (props.isDragging ? "#1e293b":"#9333ea")}
 `
 
@@ -25,10 +28,13 @@ export const JobCard = ({ desc, pn, ln, due, jobid, index }) => {
           <Container
             ref={provided.innerRef}
             {...provided.draggableProps}
-            {...provided.dragHandleProps}
-            isDragging={snapshot.isDragging}
+            
           >
-          <div className="text-white justify-around flex flex-col w-full my-2 p-2 bg-purple-600 rounded">
+            <Card
+              {...provided.dragHandleProps}
+              isDragging={snapshot.isDragging}
+              className="text-white justify-around flex flex-col w-full my-2 p-2 bg-purple-600 rounded"
+            >
             <p className='px-4'>Desc: {desc}</p>
             <div className='flex flex-wrap justify-between px-4'>
                 <p>PN: {pn}</p>
@@ -40,7 +46,7 @@ export const JobCard = ({ desc, pn, ln, due, jobid, index }) => {
                 View
               </Button>
             </div>        
-          </div>
+          </Card>
         </Container>
         )}
       </Draggable>
