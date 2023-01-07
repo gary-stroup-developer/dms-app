@@ -1,12 +1,13 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
-import { Button, Toast } from 'react-bootstrap';
+import { Button, Toast,Modal } from 'react-bootstrap';
 import ToastContainer from 'react-bootstrap/ToastContainer';
 import { useParams } from "react-router-dom";
 import { DragDropContext} from '@hello-pangea/dnd';
 import styled from "styled-components";
 import { Column } from "../Components/Column";
+import { CreateJobForm } from "./CreateJobForm";
 
 const Container = styled.div`
     display: flex;
@@ -17,6 +18,9 @@ const Container = styled.div`
 
 export const UserProfile = () => {
 
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
     const [complete, SetComplete] = useState(0);
     const [queue, SetQueue] = useState({
         dropID:"column-1",
@@ -145,8 +149,8 @@ export const UserProfile = () => {
         };
 
         getData();
-
-    }, [id, userID]);
+        console.log("first useEffect")
+    },[id,userID.id,wip,queue,staged]);
 
     
     useEffect(() => {
@@ -163,9 +167,9 @@ export const UserProfile = () => {
         }
         SetData(newState);
 
-        
-
-    },[queue,wip,staged]);
+        console.log("second useEffect")
+        //added data.columns
+    },[queue,wip,staged,data.columns]);
 
     const onDragEnd = (result) => {
         const { destination, source } = result;
@@ -278,6 +282,7 @@ export const UserProfile = () => {
     const updateStatus = async (status, job, capacity) => {
         
         try {
+            
             job.status = status;
             const response = await axios.post("http://localhost:8080/dms/update/job-status", { job, capacity }, {
                 headers: {
@@ -311,13 +316,15 @@ export const UserProfile = () => {
         }
     }
 
+  
+
     return (
         <div>
             <div className="text-slate-700 border-b border-black grid grid-cols-3 grid-rows-3 p-4">
                 <h1 className="text-3xl row-start-1 col-start-2 col-span-2 mb-4 md:text-5xl">{user.firstname} {user.lastname}</h1>
                 <Link className="row-start-2 self-center justify-self-center p-4 md:text-2xl hover:text-purple-600" to="/dashboard/admin">Dashboard</Link>
                 {/* <Link className="row-start-3 md:text-2xl" to="/dashboard/user">Create Job</Link> */}
-                <Button variant="link" className="row-start-3 text-slate-700 md:text-2xl border-none no-underline hover:text-purple-600">
+                <Button variant="link" className="row-start-3 text-slate-700 md:text-2xl border-none no-underline hover:text-purple-600" onClick={handleShow}>
                     Create Job
                 </Button>
                 <p className="row-start-2 col-start-3 self-center justify-self-center p-4 md:text-2xl">Total Jobs: {complete }</p>
@@ -339,6 +346,23 @@ export const UserProfile = () => {
                     <Toast.Body>{errorMessage ? <p className="text-red-500">{response}</p> : <p className="text-slate-700">{response}</p>}</Toast.Body>
                 </Toast>
             </ToastContainer>
+
+            <Modal show={show} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Create New Job</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <CreateJobForm />
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button className="col-md-4 bg-red-500 p-3 rounded text-white hover:bg-red-500" onClick={handleClose}>
+                        Close
+                    </Button>
+                    <Button className="col-md-4 bg-green-600 p-3 rounded text-white hover:bg-purple-600">
+                        Save Changes
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     )
 }

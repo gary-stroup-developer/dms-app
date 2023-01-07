@@ -37,7 +37,7 @@ export const Column = ({ id, jobs, toggle, title }) => {
                 {provided => (
                     <JobList ref={provided.innerRef} {...provided.droppableProps} id={toggle}>
                         {
-                            jobs.map((job,index) => <JobCard key={job._id} desc={job.raw_desc} pn={job.cat_num} ln={job.cat_lot} jobid={job._id} due={"2022-12-31"} index={index} />)
+                            jobs.map((job,index) => <JobCard key={job._id} job={job} jobid={job._id} index={index} />)
                         }
                         {provided.placeholder}
                     </JobList>
