@@ -15,15 +15,19 @@ const Card = styled.div`
 `
 
 export const JobCard = ({ job, jobid, index }) => {
-
+  const [update, SetUpdate] = useState(false);
+  const handleUpdate = () => SetUpdate(true);
   const [show, setShow] = useState(false);
 
-  const handleClose = () => setShow(false);
+  const handleClose = () => {
+    setShow(false)
+    SetUpdate(false)
+  };
   const handleShow = () => setShow(true);
 
     const cancelJob = async () => {
         try {
-            const response = await axios.post("http://localhost:8080/dms/delete-job/")
+            await axios.post("http://localhost:8080/dms/delete-job/")
         } catch (error) {
             console.log(error.response.data)
           }
@@ -63,16 +67,18 @@ export const JobCard = ({ job, jobid, index }) => {
           <Modal.Title><Button className="col-md-12 bg-red-500 p-3 rounded border-none text-white hover:bg-red-500" onClick={cancelJob}>Cancel Job</Button></Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <ReadJobForm data={job} />
+          <ReadJobForm update={update} data={job} />
         </Modal.Body>
-        <Modal.Footer>
-          <Button className="col-md-4 bg-red-500 p-3 rounded text-white hover:bg-red-500" onClick={handleClose}>
-            Close
-          </Button>
-          <Button className="col-md-4 bg-green-600 p-3 rounded text-white hover:bg-purple-600" onClick={handleClose}>
-            Save Changes
-          </Button>
-        </Modal.Footer>
+        {update ? <p></p>
+          :<Modal.Footer>
+            <Button className="col-md-4 bg-red-500 p-3 rounded text-white hover:bg-red-500" onClick={handleClose}>
+              Close
+            </Button>
+            <Button className="col-md-4 bg-green-600 p-3 rounded text-white hover:bg-purple-600" onClick={handleUpdate}>
+              Edit
+            </Button>
+          </Modal.Footer>
+        }
       </Modal>
     </>
   )

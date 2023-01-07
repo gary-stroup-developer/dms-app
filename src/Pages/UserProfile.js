@@ -150,7 +150,7 @@ export const UserProfile = () => {
 
         getData();
         console.log("first useEffect")
-    },[id,userID.id,wip,queue,staged]);
+    },[id,userID.id]);
 
     
     useEffect(() => {
@@ -169,7 +169,7 @@ export const UserProfile = () => {
 
         console.log("second useEffect")
         //added data.columns
-    },[queue,wip,staged,data.columns]);
+    },[queue,wip,staged]);
 
     const onDragEnd = (result) => {
         const { destination, source } = result;
@@ -349,23 +349,19 @@ export const UserProfile = () => {
 
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Create New Job</Modal.Title>
+                    <Modal.Title>
+                        <Button className="col-md-12 bg-red-500 p-3 rounded text-white hover:bg-red-500" onClick={handleClose}>
+                            Close
+                        </Button>
+                    </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <CreateJobForm />
+                    <CreateJobForm update={show} />
                 </Modal.Body>
-                <Modal.Footer>
-                    <Button className="col-md-4 bg-red-500 p-3 rounded text-white hover:bg-red-500" onClick={handleClose}>
-                        Close
-                    </Button>
-                    <Button className="col-md-4 bg-green-600 p-3 rounded text-white hover:bg-purple-600">
-                        Save Changes
-                    </Button>
-                </Modal.Footer>
             </Modal>
         </div>
     )
 }
 
-
+// className="container"
                             
