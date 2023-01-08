@@ -15,6 +15,8 @@ const Card = styled.div`
 `
 
 export const JobCard = ({ job, jobid, index }) => {
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [update, SetUpdate] = useState(false);
   const handleUpdate = () => SetUpdate(true);
   const [show, setShow] = useState(false);
@@ -27,10 +29,16 @@ export const JobCard = ({ job, jobid, index }) => {
 
     const cancelJob = async () => {
         try {
-            await axios.post("http://localhost:8080/dms/delete-job/")
+          const response = await axios.post("http://localhost:8080/dms/job/delete", job);
+          console.log(response)
+          setSuccessMessage(response.data);
+          setTimeout(() => {
+                window.location.reload();
+            }, 2300);
         } catch (error) {
-            console.log(error.response.data)
-          }
+          console.log(error)
+            setErrorMessage(error.response.data)
+      };
     }
 
   return (
@@ -64,7 +72,14 @@ export const JobCard = ({ job, jobid, index }) => {
       </Draggable>
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title><Button className="col-md-12 bg-red-500 p-3 rounded border-none text-white hover:bg-red-500" onClick={cancelJob}>Cancel Job</Button></Modal.Title>
+          
+          {successMessage ? <Modal.Title><p className='text-md text-slate-600'>{successMessage}</p></Modal.Title> :
+            <Modal.Title>
+              <p className='text-md text-red-600'>{errorMessage}</p>
+              <Button className="col-md-12 bg-red-500 p-3 rounded border-none text-white hover:bg-red-500" onClick={cancelJob}>Cancel Job</Button>
+              </Modal.Title>
+            }
+          
         </Modal.Header>
         <Modal.Body>
           <ReadJobForm update={update} data={job} />
@@ -78,7 +93,7 @@ export const JobCard = ({ job, jobid, index }) => {
               Edit
             </Button>
           </Modal.Footer>
-        }
+          }
       </Modal>
     </>
   )
