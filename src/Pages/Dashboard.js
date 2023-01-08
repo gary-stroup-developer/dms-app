@@ -42,7 +42,7 @@ export const Dashboard = () => {
     },[userProfile,userRole]); // Only re-run the effect if count changes
 
     return (
-        <div className="grid grid-cols-5 grid-rows-2 sm: grid-rows-1">
+        <div className="grid grid-cols-5 grid-rows-2 sm:grid-rows-1">
             <SideNav role={role} />
             <main className="row-start-2 col-start-1 col-span-5 bg-slate-800 text-white p-4 sm:h-screen sm:row-start-1 sm:col-start-2 sm:col-span-4">
                 {errorMessage}

@@ -356,7 +356,7 @@ export const UserProfile = () => {
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <CreateJobForm update={show} />
+                    <CreateJobForm id={ user.uid} show={show} />
                 </Modal.Body>
             </Modal>
         </div>

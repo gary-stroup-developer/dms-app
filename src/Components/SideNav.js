@@ -1,4 +1,6 @@
 import React from "react";
+import { Link } from "react-router-dom";
+
 export const SideNav = ({ role }) => {
     
     function toggleAdminContent() {
@@ -90,9 +92,9 @@ export const SideNav = ({ role }) => {
                                             </a>
                                         </li>
                                         <li className="relative">
-                                            <a className="flex items-center text-sm py-4 px-6 h-12 overflow-hidden text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-white hover:bg-purple-600 transition duration-300 ease-in-out" href="#!" data-mdb-ripple="true" data-mdb-ripple-color="dark">
+                                            <Link to ="/admin/new-product" className="flex items-center text-sm py-4 px-6 h-12 overflow-hidden text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-white hover:bg-purple-600 transition duration-300 ease-in-out">
                                                 New Product
-                                            </a>
+                                            </Link>
                                         </li>
                                         <li className="relative">
                                             <a className="flex items-center text-sm py-4 px-6 h-12 overflow-hidden text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-white hover:bg-purple-600 transition duration-300 ease-in-out" href="#!" data-mdb-ripple="true" data-mdb-ripple-color="dark">

@@ -82,14 +82,14 @@ export const ReadJobForm = ({ data, update }) => {
                                     <input className="form-control shadow-md" type="text" id="cat_lot" name="cat_lot" value={job.cat_lot} onChange={setValue} disabled/>}
                             </div>
 
-                            <div className="col-md-6">
+                            <div className="col-md-8">
                                 <label className="form-label" htmlFor="raw_pn">Cell Line Part Number</label>
                                 {update ?
                                     <input className="form-control shadow-md" type="text" id="raw_pn" name="raw_pn" value={job.raw_pn} onChange={setValue} />:
                                     <input className="form-control shadow-md" type="text" id="raw_pn" name="raw_pn" value={job.raw_pn} onChange={setValue} disabled/>}
                             </div>
 
-                            <div className="col-md-6">
+                            <div className="col-md-12">
                                 <label className="form-label" htmlFor="raw_desc">Cell Line Description</label>
                                 {update ?
                                     <input className="form-control shadow-md" type="text" id="raw_desc" name="raw_desc" value={job.raw_desc} onChange={setValue} />:
