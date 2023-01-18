@@ -3,6 +3,7 @@ import { useState } from "react";
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import { Button } from "react-bootstrap";
+import { FSR } from "./FSR";
 
 export const ReadJobForm = ({ data, update }) => {
     //need to set correct state values
@@ -129,9 +130,7 @@ export const ReadJobForm = ({ data, update }) => {
                     <Tab eventKey="FSR" title="FSR">
                         <div className="col-md-12">
                             <label className="block form-label" htmlFor="fsr">FSR</label>
-                            {update ?
-                                <input className="form-control shadow-md h-40" type="text" id="fsr" name="fsr" value={job.fsr} onChange={setValue} /> :
-                                <input className="form-control shadow-md h-40" type="text" id="fsr" name="fsr" value={job.fsr} onChange={setValue} disabled />}
+                            <FSR user={data.uid} fsrData={ data.fsr } jobid={data.id} update={update} />
                         </div>
                     </Tab>
                     <Tab eventKey="CBR" title="CBR">
