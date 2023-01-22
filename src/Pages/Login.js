@@ -35,7 +35,7 @@ export const Login = () => {
             'content-type': 'application/json'
         }
         }).then((response) => {
-            navigate(`/dashboard/${response.data.Role}`, { replace: true })
+            navigate(`/dashboard/${response.data.Role}`, { replace: false })
         })
         .catch(function (error) {
             // handle error
